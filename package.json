@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "exif-parser": "^0.1.7",
+    "imagemagick-stream": "^2.0.0",
     "mongojs": "^0.18.2",
     "restify": "^3.0.1",
     "shortid": "^2.2.2",
