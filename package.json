@@ -9,6 +9,8 @@
   "author": "Martin Naumann <martin@geekonaut.de>",
   "license": "ISC",
   "dependencies": {
-    "restify": "^3.0.1"
+    "exif-parser": "^0.1.7",
+    "restify": "^3.0.1",
+    "shortid": "^2.2.2"
   }
 }
