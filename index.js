@@ -54,15 +54,11 @@ function saveToDatabase(record, errorCallback, successCallback) {
 
 function listSpots(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  res.json([
-    {file: 'zurich_1.jpg', name: 'Zürich Platzspitz'},
-    {file: 'zurich_2.jpg', name: 'Zürich Über den Dächern'},
-    {file: 'zurich_3.jpg', name: 'Zürich HB Shopville'},
-    {file: 'zurich_4.jpg', name: 'Zürich Schmiede Wiedikon'},
-    {file: 'zurich_5.jpg', name: 'Zürich Uetliberg'},
-    {file: 'zurich_6.jpg', name: 'Zürich Liebfrauenkirche'},
-  ]);
-  next();
+  db.teleports.find({}, function(err, teleports) {
+    if(err) res.send(500, '{"error": "Cannot list spots."}');
+    else res.json(teleports);
+    next();
+  });
 }
 
 function addSpot(req, res, next) {
