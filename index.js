@@ -19,13 +19,19 @@ function flipImageStream(localFile) {
   return passthrough;
 }
 
-function uploadToS3(fileStream, uploadName, errorCallback, successCallback) {
+function makeThumbStream(localFile) {
+  var passthrough = new stream.PassThrough();
+  im(localFile).op('gravity', 'center').op('thumbnail', '500x500^').op('extent', '500x500').op('format', 'png').pipe(passthrough);
+  return passthrough;
+}
+
+function uploadToS3(fileStream, uploadName, contentType, errorCallback, successCallback) {
 
   var uploader = new S3(fileStream, {accessKeyId: process.env.AWS_ACCESS_KEY, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY},
     {
       Bucket: 'teleports',
-      Key: 'portals/' + uploadName,
-      ContentType: 'image/jpeg'
+      Key: uploadName,
+      ContentType: contentType || 'image/jpeg'
     }
   );
 
@@ -91,7 +97,9 @@ function addSpot(req, res, next) {
       teleport.lng = metadata.tags.GPSLongitude;
     }
 
-    uploadToS3(flipImageStream(req.files.file.path), fileOutName + '.jpg', function error(err) {
+    uploadToS3(makeThumbStream(req.files.file.path), 'thumbs/' + fileOutName + '.png', 'image/png'); // don't worry too much about thumbnails.
+
+    uploadToS3(flipImageStream(req.files.file.path), 'portals/' + fileOutName + '.jpg', 'image/jpeg', function error(err) {
       console.error("Error saving to S3 ", err, teleport);
       res.header('Location', req.params.callback + '?error=true');
       res.send(302, 'An error happened :(');
