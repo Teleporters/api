@@ -42,7 +42,9 @@ function uploadToS3(fileStream, uploadName, contentType, errorCallback, successC
     successCallback();
   });
 
-  uploader.on('error', errorCallback);
+  uploader.on('error', errorCallback || function() {
+    // whatevs.
+  });
 }
 
 function saveToDatabase(record, errorCallback, successCallback) {
