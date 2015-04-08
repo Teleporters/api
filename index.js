@@ -41,10 +41,6 @@ function uploadToS3(fileStream, uploadName, contentType, errorCallback, successC
     console.log('Upload finished: ', resp);
     successCallback();
   });
-
-  uploader.on('error', errorCallback || function() {
-    // whatevs.
-  });
 }
 
 function saveToDatabase(record, errorCallback, successCallback) {
@@ -99,7 +95,9 @@ function addSpot(req, res, next) {
       teleport.lng = metadata.tags.GPSLongitude;
     }
 
-    uploadToS3(makeThumbStream(req.files.file.path), 'thumbs/' + fileOutName + '.png', 'image/png'); // don't worry too much about thumbnails.
+    uploadToS3(makeThumbStream(req.files.file.path), 'thumbs/' + fileOutName + '.png', 'image/png', function(err) {
+      console.error("Thumbnail upload failed for " + fileOutName, err);
+    }, function() {}); // don't worry too much about thumbnails.
 
     uploadToS3(flipImageStream(req.files.file.path), 'portals/' + fileOutName + '.jpg', 'image/jpeg', function error(err) {
       console.error("Error saving to S3 ", err, teleport);
