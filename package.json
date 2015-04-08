@@ -12,7 +12,7 @@
     "exif-parser": "^0.1.7",
     "mongojs": "^0.18.2",
     "restify": "^3.0.1",
-    "s3": "^4.4.0",
-    "shortid": "^2.2.2"
+    "shortid": "^2.2.2",
+    "streaming-s3": "^0.4.0"
   }
 }
