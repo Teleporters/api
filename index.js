@@ -67,12 +67,13 @@ function listSpots(req, res, next) {
 }
 
 function addSpot(req, res, next) {
-  console.log(req.params);
   if(!req.files) {
     res.redirect(req.params)
     next();
     return;
   }
+
+  if(!req.params.callback) req.params.callback = 'http://teleports.me/';
 
   fs.readFile(req.files.file.path, function(err, imgContent) {
     if(err) {
