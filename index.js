@@ -52,6 +52,11 @@ function saveToDatabase(record, errorCallback, successCallback) {
 
 // Handlers
 
+function sendInquiryNotice(req, res, next) {
+  // ??
+  res.json({result: "OK"});
+}
+
 function listSpots(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   db.teleports.find({}, function(err, teleports) {
@@ -117,7 +122,8 @@ function addSpot(req, res, next) {
 
 var server = restify.createServer();
 server.get('/spots', listSpots);
-server.post('/spots', restify.bodyParser(), addSpot)
+server.post('/spots', restify.bodyParser(), addSpot);
+server.post('/inquiry', restify.bodyParser(), sendInquiryNotice);
 
 server.listen(process.env.PORT || 8080, function() {
   console.log('%s listening at %s', server.name, server.url);
