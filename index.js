@@ -59,7 +59,12 @@ function sendInquiryNotice(req, res, next) {
 
 function listSpots(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  db.teleports.find({}, function(err, teleports) {
+
+  if(!req.params.page) req.params.page = 0;
+  db.teleports.find({
+    limit: 50,
+    offset: req.params.page * 50
+  }, function(err, teleports) {
     if(err) res.send(500, '{"error": "Cannot list spots."}');
     else res.json(teleports);
     next();
@@ -105,12 +110,14 @@ function addSpot(req, res, next) {
       console.error("Error saving to S3 ", err, teleport);
       res.header('Location', req.params.callback + '?error=true');
       res.send(302, 'An error happened :(');
+      next();
     }, function success() {
       console.log("S3 Upload successful");
       saveToDatabase(teleport, function(err) {
         console.error("Error saving to DB: " + err, teleport);
         res.header('Location', req.params.callback + '?error=true');
         res.send(302, 'An error happened :(');
+        next();
       }, function() {
         console.log("DB insert successful");
         res.header('Location', req.params.callback + '?public_id=' + fileOutName);
