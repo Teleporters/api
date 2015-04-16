@@ -54,6 +54,7 @@ function saveToDatabase(record, errorCallback, successCallback) {
 // Handlers
 
 function sendInquiryNotice(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
   console.log("INQUIRY FROM " + req.params.email)
   var transporter = nodemailer.createTransport();
   transporter.sendMail({
