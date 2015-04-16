@@ -63,6 +63,7 @@ function sendInquiryNotice(req, res, next) {
     text: 'Inquiry received from ' + req.params.email
   });
   res.json({result: "OK"});
+  next();
 }
 
 function listSpots(req, res, next) {
