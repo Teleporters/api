@@ -5,7 +5,8 @@ var fs = require('fs'),
     mongo = require('mongojs'),
     stream = require('stream'),
     restify = require('restify'),
-    shortid = require('shortid');
+    shortid = require('shortid'),
+    nodemailer = require('nodemailer');
 
 // Init global stuff
 
@@ -53,7 +54,14 @@ function saveToDatabase(record, errorCallback, successCallback) {
 // Handlers
 
 function sendInquiryNotice(req, res, next) {
-  // ??
+  console.log("INQUIRY FROM " + req.params.email)
+  var transporter = nodemailer.createTransport();
+  transporter.sendMail({
+    from: 'inquiries@api.teleports.me',
+    to: 'hello@teleports.me',
+    subject: 'Inquiry',
+    text: 'Inquiry received from ' + req.params.email
+  });
   res.json({result: "OK"});
 }
 
@@ -131,7 +139,7 @@ function addSpot(req, res, next) {
 var server = restify.createServer();
 server.get('/spots', listSpots);
 server.post('/spots', restify.bodyParser(), addSpot);
-//server.post('/inquiry', restify.bodyParser(), sendInquiryNotice);
+server.post('/inquiry', restify.bodyParser(), sendInquiryNotice);
 
 server.listen(process.env.PORT || 8080, function() {
   console.log('%s listening at %s', server.name, server.url);
