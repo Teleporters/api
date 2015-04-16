@@ -102,10 +102,6 @@ function addSpot(req, res, next) {
       teleport.lng = metadata.tags.GPSLongitude;
     }
 
-    uploadToS3(makeThumbStream(req.files.file.path), 'thumbs/' + fileOutName + '.png', 'image/png', function(err) {
-      console.error("Thumbnail upload failed for " + fileOutName, err);
-    }, function() {}); // don't worry too much about thumbnails.
-
     uploadToS3(flipImageStream(req.files.file.path), 'portals/' + fileOutName + '.jpg', 'image/jpeg', function error(err) {
       console.error("Error saving to S3 ", err, teleport);
       res.header('Location', req.params.callback + '?error=true');
@@ -113,16 +109,21 @@ function addSpot(req, res, next) {
       next();
     }, function success() {
       console.log("S3 Upload successful");
-      saveToDatabase(teleport, function(err) {
-        console.error("Error saving to DB: " + err, teleport);
-        res.header('Location', req.params.callback + '?error=true');
-        res.send(302, 'An error happened :(');
-        next();
+      uploadToS3(makeThumbStream(req.files.file.path), 'thumbs/' + fileOutName + '.png', 'image/png', function(err) {
+        console.error("Thumbnail upload failed for " + fileOutName, err);
       }, function() {
-        console.log("DB insert successful");
-        res.header('Location', req.params.callback + '?public_id=' + fileOutName);
-        res.send(302, fileOutName);
-        next();
+        console.log("Thumbnail saved");
+        saveToDatabase(teleport, function(err) {
+          console.error("Error saving to DB: " + err, teleport);
+          res.header('Location', req.params.callback + '?error=true');
+          res.send(302, 'An error happened :(');
+          next();
+        }, function() {
+          console.log("DB insert successful");
+          res.header('Location', req.params.callback + '?public_id=' + fileOutName);
+          res.send(302, fileOutName);
+          next();
+        });
       });
     });
   });
@@ -131,7 +132,7 @@ function addSpot(req, res, next) {
 var server = restify.createServer();
 server.get('/spots', listSpots);
 server.post('/spots', restify.bodyParser(), addSpot);
-server.post('/inquiry', restify.bodyParser(), sendInquiryNotice);
+//server.post('/inquiry', restify.bodyParser(), sendInquiryNotice);
 
 server.listen(process.env.PORT || 8080, function() {
   console.log('%s listening at %s', server.name, server.url);
