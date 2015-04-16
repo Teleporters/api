@@ -60,11 +60,10 @@ function sendInquiryNotice(req, res, next) {
 function listSpots(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
 
-  if(!req.params.page) req.params.page = 0;
-  db.teleports.find({
-    limit: 50,
-    offset: req.params.page * 50
-  }, function(err, teleports) {
+  if(!req.params.page) page = 0;
+  else page = req.params.page;
+
+  db.teleports.find({}).limit(50).skip(page * 50).toArray(function(err, teleports) {
     if(err) res.send(500, '{"error": "Cannot list spots."}');
     else res.json(teleports);
     next();
