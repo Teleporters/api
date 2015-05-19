@@ -1,3 +1,5 @@
+require('newrelic')
+
 var fs = require('fs'),
     im = require('imagemagick-stream'),
     S3 = require('streaming-s3'),
