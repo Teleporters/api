@@ -12,7 +12,7 @@ var fs = require('fs'),
 
 // Init global stuff
 
-var db = mongo(process.env.MONGOLAB_URI, ['teleports']);
+var db = mongo(process.env.MONGOLAB_URI, ['teleports'], {authMechanism: 'ScramSHA1'});
 
 // Helpers
 
